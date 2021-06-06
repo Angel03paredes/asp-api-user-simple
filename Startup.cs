@@ -19,6 +19,8 @@ namespace webapi
 {
     public class Startup
     {
+
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -36,6 +38,15 @@ namespace webapi
             });
 
             services.AddSingleton<MongoDBClient>();
+
+            services.AddCors(options =>
+                {
+                    options.AddPolicy(name: MyAllowSpecificOrigins,
+                              builder =>
+                              {
+                                  builder.WithOrigins("*");
+                              });
+                });
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -55,6 +66,8 @@ namespace webapi
             }
 
             app.UseHttpsRedirection();
+
+            app.UseCors(MyAllowSpecificOrigins);
 
             app.UseRouting();
 
